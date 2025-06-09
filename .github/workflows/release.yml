@@ -42,4 +42,20 @@ jobs:
 
       - name: Build
         run: ${{ matrix.build-step }}
+
+      - name: Rename binary
+        run: |
+          mkdir -p dist
+          cp target/${{ matrix.arch }}/release/aerp dist/${{ matrix.file }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+  
+      - name: Upload to S3
+        run: |
+          aws s3 cp dist/${{ matrix.file }} s3://download.auditplus.io/${{ matrix.file }} --acl public-read
     
