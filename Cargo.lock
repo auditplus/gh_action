@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "tryghci"
+name = "aerp"
 version = "0.1.0"
