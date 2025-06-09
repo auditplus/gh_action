@@ -44,12 +44,14 @@ jobs:
         run: ${{ matrix.build-step }}
 
       - name: Rename binary
+        id: out
         run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          echo VERSION=$VERSION
+          version=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && version=$(echo $version | sed -e 's/^v//')
           cp target/${{ matrix.arch }}/release/aerp aerp
-          tar -zcvf aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz aerp
+          file=$(echo "aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz")
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+          tar -zcvf file aerp
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -60,5 +62,5 @@ jobs:
   
       - name: Upload to S3
         run: |
-          aws s3 cp aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz s3://download.auditplus.io/aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz
+          aws s3 cp ${{ steps.out.outputs.file }} s3://download.auditplus.io/${{ steps.out.outputs.file }}
     
