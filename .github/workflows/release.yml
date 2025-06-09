@@ -45,7 +45,9 @@ jobs:
 
       - name: Rename binary
         run: |
-          version=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo VERSION=$VERSION
           cp target/${{ matrix.arch }}/release/aerp aerp
           tar -zcvf aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz aerp
       
