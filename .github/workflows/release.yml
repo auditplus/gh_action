@@ -57,5 +57,5 @@ jobs:
   
       - name: Upload to S3
         run: |
-          aws s3 cp dist/${{ matrix.file }} s3://download.auditplus.io/${{ matrix.file }} --acl public-read
+          aws s3 cp dist/${{ matrix.file }} s3://download.auditplus.io/${{ matrix.file }}
     
