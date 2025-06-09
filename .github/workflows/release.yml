@@ -22,7 +22,7 @@ jobs:
           - arch: x86_64-unknown-linux-gnu
             os: linux
             runner: ubuntu-latest
-            file: aerp-linux-x86_64
+            file: linux-x86_64
             build-step: |
               cargo build --release --target x86_64-unknown-linux-gnu
     
@@ -45,8 +45,9 @@ jobs:
 
       - name: Rename binary
         run: |
-          mkdir -p dist
-          cp target/${{ matrix.arch }}/release/aerp dist/${{ matrix.file }}
+          version=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          cp target/${{ matrix.arch }}/release/aerp aerp
+          tar -zcvf aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz aerp
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -57,5 +58,5 @@ jobs:
   
       - name: Upload to S3
         run: |
-          aws s3 cp dist/${{ matrix.file }} s3://download.auditplus.io/${{ matrix.file }}
+          aws s3 cp aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz s3://download.auditplus.io/aerp-${{version}}-${{ matrix.file }}.linux-amd64.tgz
     
